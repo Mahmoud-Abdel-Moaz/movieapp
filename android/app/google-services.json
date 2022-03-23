@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "707050824876",
+    "project_id": "amiable-dynamo-233621",
+    "storage_bucket": "amiable-dynamo-233621.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707050824876:android:940172901a9c835e7b2b09",
+        "android_client_info": {
+          "package_name": "com.appgain.movieapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707050824876-n3kqm4f3t3fojgomnptm6rsceo4bbvmf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW4cV8FcPZ3VzVSQW6ZTV1n_flUdfdih8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707050824876-n3kqm4f3t3fojgomnptm6rsceo4bbvmf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

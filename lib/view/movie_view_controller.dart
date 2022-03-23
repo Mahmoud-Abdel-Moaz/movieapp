@@ -1,10 +1,13 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 import '../model/movie.dart';
 import '../model/movie_details.dart';
 import '../model/movies_response.dart';
-import '../shared/components/constants.dart';
-import '../shared/network/remote/dio_helper.dart';
+import '../shared/constants.dart';
 
 class MovieProvider with ChangeNotifier {
   MoviesResponse? _moviesResponse;
@@ -26,33 +29,61 @@ class MovieProvider with ChangeNotifier {
     if (!_isLoading) {
       _isLoading = !_isLoading;
       notifyListeners();
-      await DioHelper.getData(
-          url: 'movie/popular',
-          query: {'api_key': apiKey, 'page': _page}).then((value) {
-        _page++;
-        _moviesResponse = MoviesResponse.fromJson(value.data);
-        _movies.addAll(_moviesResponse!.movies!);
+      try {
+        String url = baseUrl + 'movie/popular?api_key=$apiKey&page=$_page';
+        final response = await http.get(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+        if (kDebugMode) {
+          log("headers  " + response.body);
+          log("response " + response.body);
+        }
+        if (response.statusCode == 200) {
+          _isLoading = !_isLoading;
+          _page++;
+          _moviesResponse = MoviesResponse.fromJson(jsonDecode(response.body));
+          _movies.addAll(_moviesResponse!.movies!);
+          notifyListeners();
+        } else {
+          throw response.body;
+        }
+      } catch (e) {
+        _isLoading = !_isLoading;
         notifyListeners();
-      }).catchError((e) {
         if (kDebugMode) {
           print(e.toString());
         }
-      });
-      _isLoading = !_isLoading;
-      notifyListeners();
+      }
     }
   }
 
   getMovieDetails(int id) async {
     _movieDetails = null;
-    await DioHelper.getData(url: 'movie/$id', query: {'api_key': apiKey})
-        .then((value) {
-      _movieDetails = MovieDetails.fromJson(value.data);
-      notifyListeners();
-    }).catchError((e) {
+    try {
+      String url = baseUrl + 'movie/$id?api_key=$apiKey';
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      if (kDebugMode) {
+        log("headers  " + response.body);
+        log("response " + response.body);
+      }
+      if (response.statusCode == 200) {
+        _movieDetails = MovieDetails.fromJson(jsonDecode(response.body));
+        notifyListeners();
+      } else {
+        throw response.body;
+      }
+    } catch (e) {
       if (kDebugMode) {
         print(e.toString());
       }
-    });
+    }
   }
 }

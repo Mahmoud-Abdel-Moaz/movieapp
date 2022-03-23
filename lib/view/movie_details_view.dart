@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../model/movie_details.dart';
-import '../shared/components/constants.dart';
+import '../shared/constants.dart';
 import 'movie_view_controller.dart';
 
 class MovieDetailsScreen extends StatefulWidget {

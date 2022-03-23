@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movieapp/shared/components/constants.dart';
+import 'package:movieapp/shared/constants.dart';
 import 'package:movieapp/view/movie_details_view.dart';
 
 import '../model/movie.dart';
