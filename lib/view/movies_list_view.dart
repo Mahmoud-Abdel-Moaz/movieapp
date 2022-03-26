@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'movie_view_controller.dart';
-import 'movie_view_item.dart';
 import 'package:provider/provider.dart';
 
-import '../model/movie.dart';
 import '../model/movies_response.dart';
+import 'movie_view_controller.dart';
+import 'movie_view_item.dart';
 
 class MoviesListScreen extends StatefulWidget {
   const MoviesListScreen({Key? key}) : super(key: key);
@@ -15,9 +14,20 @@ class MoviesListScreen extends StatefulWidget {
 }
 
 class _MoviesListScreenState extends State<MoviesListScreen> {
+  var _controller = ScrollController();
+  bool _isLoading = false;
+
   @override
   void initState() {
     Provider.of<MovieProvider>(context, listen: false).getMovies();
+    _controller = ScrollController()
+      ..addListener(() {
+        if (_controller.position.atEdge) {
+          if (_controller.position.maxScrollExtent == _controller.offset) {
+            Provider.of<MovieProvider>(context, listen: false).getMovies();
+          }
+        }
+      });
     super.initState();
   }
 
@@ -25,6 +35,7 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
   Widget build(BuildContext context) {
     MovieProvider _movieProvider = Provider.of<MovieProvider>(context);
     MoviesResponse? _moviesResponse = _movieProvider.moviesResponse;
+    _isLoading = _movieProvider.isLoading;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -36,42 +47,30 @@ class _MoviesListScreenState extends State<MoviesListScreen> {
         centerTitle: true,
       ),
       body: _moviesResponse != null
-          ? ListView.separated(
-        shrinkWrap: true,
-        padding: EdgeInsets.zero,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (context, index) =>
-            MovieViewItem(_moviesResponse.movies![index]),
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
-        itemCount: _moviesResponse.movies!.length,
-      )/*Container(
-
-            child: SingleChildScrollView(
-                padding: EdgeInsets.zero,
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Expanded(
-                        child: ListView.separated(
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.separated(
                       shrinkWrap: true,
+                      controller: _controller,
                       padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) =>
-                          MovieViewItem(_moviesResponse.movies![index]),
-                      separatorBuilder: (context, index) => const SizedBox(height: 16),
-                      itemCount: _moviesResponse.movies!.length,
-                    )),
-                    const SizedBox(
-                      height: 16,
+                          MovieViewItem(_movieProvider.movies[index]),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemCount: _movieProvider.movies.length,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  if (_isLoading) const LinearProgressIndicator(),
+                ],
               ),
-          )*/
+            )
           : const Center(
               child: CircularProgressIndicator(),
             ),
